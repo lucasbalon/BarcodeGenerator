@@ -1,0 +1,149 @@
+body {
+    font-family: Source Sans Pro, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Pour centrer le conteneur global verticalement si besoin */
+    min-height: 100vh; /* S'assure que le body prend au moins toute la hauteur de la fenêtre */
+    margin: 0;
+    background-color: #f4f4f4;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.container {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 90%; /* Prend 90% de la largeur de la page */
+    max-width: 1200px; /* Augmente la largeur maximale du conteneur */
+    min-width: 300px; /* Empêche le conteneur d'être trop petit sur les petits écrans */
+    box-sizing: border-box; /* Inclut padding et border dans la largeur */
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.barcode-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Ancien margin-bottom: 15px; */
+    margin-bottom: 40px; /* <--- Augmenté pour un meilleur espacement */
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    position: relative;
+    flex-wrap: wrap;
+}
+
+.barcode-entry .input-group {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-right: 15px;
+    min-width: 250px; /* Assure que le groupe d'inputs ne devienne pas trop étroit */
+}
+
+.barcode-entry input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+}
+
+.barcode-entry input.note-input {
+    font-size: 14px;
+    color: #555;
+    background-color: #f0f0f0;
+    margin-bottom: 0;
+}
+
+.barcode-entry .barcode-image-container {
+    min-width: 300px; /* Augmente la largeur minimale pour l'image */
+    height: 100px; /* Augmente la hauteur fixe pour l'image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #eee;
+    margin-right: 15px;
+    flex-grow: 1; /* Permet au conteneur d'image de prendre plus d'espace */
+}
+
+.barcode-entry img {
+    max-width: 100%;
+    max-height: 90px; /* Augmente la hauteur max de l'image du code-barres */
+    display: block;
+}
+
+.barcode-entry .delete-btn {
+    background-color: #ff5c5c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px; /* Légèrement plus grand */
+    height: 30px; /* Légèrement plus grand */
+    font-size: 18px; /* Taille de la police plus grande */
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 30px;
+    text-align: center;
+    padding: 0;
+    transition: background-color 0.3s ease;
+    margin-left: 10px; /* Ajoute un petit espace à gauche du bouton de suppression */
+}
+
+.barcode-entry .delete-btn:hover {
+    background-color: #e04343;
+}
+
+#add-barcode-btn {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 45px; /* Légèrement plus grand */
+    height: 45px; /* Légèrement plus grand */
+    font-size: 28px; /* Taille de la police plus grande */
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 25px;
+    transition: background-color 0.3s ease;
+    line-height: 43px;
+}
+
+#add-barcode-btn:hover {
+    background-color: #4cae4c;
+}
+
+.tec-it-attribution {
+    padding-top: 15px;
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+}
+
+.tec-it-attribution a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.tec-it-attribution a:hover {
+    text-decoration: underline;
+}
+
+.tec-it-attribution img {
+    border: 0;
+    margin-top: 5px;
+    width: 60px;
+    height: 60px;
+}

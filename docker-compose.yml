@@ -1,0 +1,9 @@
+services:
+  generateur-cb-web:
+    build:
+      context: . # Indique de construire l'image à partir du Dockerfile dans le répertoire actuel
+      dockerfile: Dockerfile
+    container_name: mon_generateur_cb_app
+    ports:
+      - "8080:80" # Mappe le port 8080 de l'hôte au port 80 du conteneur
+    restart: unless-stopped # Le conteneur redémarrera si arrêté, sauf si vous l'arrêtez manuellement
