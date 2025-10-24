@@ -3,21 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur de Codes-Barres Multiples</title>
+    <title>Générateur de Codes-Barres</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" sizes="16x16" href="icons8-barcode-outline-hand-drawn-16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="icons8-barcode-outline-hand-drawn-32.png">
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 </head>
 <body>
-<div class="container">
+<div class="header">
     <h1>Générateur de Codes-Barres</h1>
+</div>
 
-    <div id="barcode-generator-area">
+<div class="container">
+    <div id="pinned-badge" class="pinned-badge hidden">
+        <div class="pinned-badge-header">
+            <div class="pinned-badge-title">
+                <span>📌</span>
+                <span>Badge épinglé</span>
+            </div>
+            <button class="unpin-btn" id="unpin-btn">Désépingler</button>
+        </div>
+        <div class="pinned-barcode-display">
+            <div id="pinned-note" class="pinned-note"></div>
+            <svg id="pinned-barcode-svg"></svg>
+        </div>
     </div>
 
-    <button id="add-barcode-btn" title="Ajouter un code-barres">+</button>
+    <div class="add-btn-container">
+        <button class="add-btn" id="add-btn">+ Ajouter un code-barres</button>
+    </div>
 
+    <div id="barcodes-grid" class="barcodes-grid"></div>
+
+    <div id="empty-state" class="empty-state">
+        <h2>Aucun code-barres</h2>
+        <p>Cliquez sur le bouton ci-dessus pour commencer</p>
+    </div>
 </div>
 
 <script src="script.js"></script>
