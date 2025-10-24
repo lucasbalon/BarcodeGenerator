@@ -1,140 +1,234 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const barcodeGeneratorArea = document.getElementById('barcode-generator-area');
-    const addBarcodeBtn = document.getElementById('add-barcode-btn');
-    let entryCounter = 0;
+let entryCounter = 0;
+let pinnedBarcodeId = null;
 
-    // Fonction pour sauvegarder toutes les entrées
-    function saveEntries() {
-        const entries = [];
-        document.querySelectorAll('.barcode-entry').forEach(entryDiv => {
-            const input = entryDiv.querySelector('input[type="text"]:not(.note-input)');
-            const noteInput = entryDiv.querySelector('.note-input');
-            if (input) {
-                entries.push({
-                    data: input.value,
-                    note: noteInput ? noteInput.value : ''
-                });
-            }
+function saveData() {
+    const entries = [];
+    document.querySelectorAll('.barcode-card').forEach(card => {
+        const id = card.dataset.id;
+        const dataInput = card.querySelector('.data-input');
+        const noteInput = card.querySelector('.note-input');
+        entries.push({
+            id: id,
+            data: dataInput.value,
+            note: noteInput.value,
+            isPinned: id === pinnedBarcodeId
         });
-        localStorage.setItem('barcodeEntries', JSON.stringify(entries));
+    });
+
+    const data = {
+        entries: entries,
+        pinnedId: pinnedBarcodeId
+    };
+
+    // Stockage en mémoire (remplacer par localStorage si nécessaire)
+    window.barcodeData = data;
+}
+
+function loadData() {
+    const data = window.barcodeData;
+
+    if (data && data.entries && data.entries.length > 0) {
+        data.entries.forEach(entry => {
+            createBarcodeCard(entry.data, entry.note, entry.id);
+        });
+        if (data.pinnedId) {
+            pinnedBarcodeId = data.pinnedId;
+            updatePinnedBadge();
+            hideCardFromList(data.pinnedId);
+        }
+    } else {
+        createBarcodeCard('EXEMPLE123', 'Mon badge');
     }
+    updateEmptyState();
+}
 
-    // Fonction pour créer une nouvelle entrée de code-barres
-    function createBarcodeEntry(initialData = "", initialNote = "") {
-        entryCounter++;
-        const entryDiv = document.createElement('div');
-        entryDiv.classList.add('barcode-entry');
-        entryDiv.id = `barcode-entry-${entryCounter}`;
+function createBarcodeCard(data = '', note = '', id = null) {
+    entryCounter++;
+    const cardId = id || `card-${entryCounter}`;
 
-        const inputGroup = document.createElement('div');
-        inputGroup.classList.add('input-group');
+    const card = document.createElement('div');
+    card.className = 'barcode-card';
+    card.dataset.id = cardId;
 
-        const dataInput = document.createElement('input');
-        dataInput.type = 'text';
-        dataInput.value = initialData;
-        dataInput.placeholder = 'Données du code-barres';
-        dataInput.setAttribute('aria-label', 'Données du code-barres');
+    card.innerHTML = `
+        <div class="card-header">
+            <div class="card-actions">
+                <button class="action-btn pin-btn" title="Épingler">📌</button>
+                <button class="action-btn delete-btn" title="Supprimer">✕</button>
+            </div>
+        </div>
+        <div class="input-group">
+            <input type="text" class="data-input" value="${data}" placeholder="Données du code-barres">
+            <input type="text" class="note-input" value="${note}" placeholder="Note (optionnel)">
+        </div>
+        <div class="barcode-display">
+            <svg class="barcode-svg"></svg>
+        </div>
+    `;
 
-        const noteInput = document.createElement('input');
-        noteInput.type = 'text';
-        noteInput.value = initialNote;
-        noteInput.placeholder = 'Note (optionnel)';
-        noteInput.classList.add('note-input');
-        noteInput.setAttribute('aria-label', 'Note associée au code-barres');
+    const dataInput = card.querySelector('.data-input');
+    const noteInput = card.querySelector('.note-input');
+    const svg = card.querySelector('.barcode-svg');
+    const pinBtn = card.querySelector('.pin-btn');
+    const deleteBtn = card.querySelector('.delete-btn');
 
-        inputGroup.appendChild(dataInput);
-        inputGroup.appendChild(noteInput);
+    function updateBarcode() {
+        const barcodeData = dataInput.value.trim() || 'NO DATA';
+        try {
+            JsBarcode(svg, barcodeData, {
+                format: "CODE128",
+                displayValue: true,
+                fontSize: 14,
+                margin: 8,
+                width: 2,
+                height: 50
+            });
+        } catch (e) {
+            console.error('Erreur génération code-barres:', e);
+        }
 
-        const imageContainer = document.createElement('div');
-        imageContainer.classList.add('barcode-image-container');
-
-        // Créez un élément SVG pour le code-barres
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.id = `barcode-svg-${entryCounter}`;
-
-        // Générez le code-barres avec JsBarcode
-        JsBarcode(svg, initialData || 'NO DATA', {
-            format: "CODE128",
-            displayValue: true,
-            fontSize: 14,
-            margin: 5,
-            width: 2,
-            height: 50
-        });
-
-        imageContainer.appendChild(svg);
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.classList.add('delete-btn');
-        deleteBtn.innerHTML = '&times;';
-        deleteBtn.title = 'Supprimer ce code-barres';
-        deleteBtn.setAttribute('aria-label', 'Supprimer ce code-barres');
-
-        // Événement pour mettre à jour le code-barres en temps réel
-        let debounceTimer;
-        dataInput.addEventListener('input', () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                const data = dataInput.value.trim();
-                JsBarcode(svg, data || 'NO DATA', {
-                    format: "CODE128",
-                    displayValue: true,
-                    fontSize: 14,
-                    margin: 5,
-                    width: 2,
-                    height: 50
-                });
-                saveEntries();
-            }, 300);
-        });
-
-        // Événement pour sauvegarder la note en temps réel
-        noteInput.addEventListener('input', () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                saveEntries();
-            }, 300);
-        });
-
-        // Événement pour supprimer l'entrée
-        deleteBtn.addEventListener('click', () => {
-            entryDiv.remove();
-            saveEntries();
-        });
-
-        entryDiv.appendChild(inputGroup);
-        entryDiv.appendChild(imageContainer);
-        entryDiv.appendChild(deleteBtn);
-
-        return entryDiv;
-    }
-
-    // Fonction pour charger les entrées sauvegardées
-    function loadEntries() {
-        const savedEntries = localStorage.getItem('barcodeEntries');
-        if (savedEntries) {
-            const entries = JSON.parse(savedEntries);
-            if (entries.length > 0) {
-                entries.forEach(entry => {
-                    const newEntry = createBarcodeEntry(entry.data, entry.note);
-                    barcodeGeneratorArea.appendChild(newEntry);
-                });
-            } else {
-                barcodeGeneratorArea.appendChild(createBarcodeEntry("Exemple123", ""));
-            }
-        } else {
-            barcodeGeneratorArea.appendChild(createBarcodeEntry("Exemple123", ""));
+        if (cardId === pinnedBarcodeId) {
+            updatePinnedBadge();
         }
     }
 
-    // Charger les entrées au démarrage
-    loadEntries();
+    updateBarcode();
 
-    // Événement pour le bouton "+"
-    addBarcodeBtn.addEventListener('click', () => {
-        const newEntry = createBarcodeEntry("", "");
-        barcodeGeneratorArea.appendChild(newEntry);
-        newEntry.querySelector('input[type="text"]:not(.note-input)').focus();
-        saveEntries();
+    let debounceTimer;
+    dataInput.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            updateBarcode();
+            saveData();
+        }, 300);
+    });
+
+    noteInput.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            if (cardId === pinnedBarcodeId) {
+                updatePinnedBadge();
+            }
+            saveData();
+        }, 300);
+    });
+
+    pinBtn.addEventListener('click', () => {
+        if (pinnedBarcodeId === cardId) {
+            // Désépingler
+            pinnedBarcodeId = null;
+            updatePinnedBadge();
+            showCardInList(cardId);
+        } else {
+            // Afficher l'ancien code-barres épinglé dans la liste
+            if (pinnedBarcodeId) {
+                showCardInList(pinnedBarcodeId);
+            }
+            // Épingler le nouveau
+            pinnedBarcodeId = cardId;
+            updatePinnedBadge();
+            hideCardFromList(cardId);
+        }
+        saveData();
+    });
+
+    deleteBtn.addEventListener('click', () => {
+        if (cardId === pinnedBarcodeId) {
+            pinnedBarcodeId = null;
+            updatePinnedBadge();
+        }
+        card.remove();
+        saveData();
+        updateEmptyState();
+    });
+
+    document.getElementById('barcodes-grid').appendChild(card);
+    return card;
+}
+
+function hideCardFromList(cardId) {
+    const card = document.querySelector(`[data-id="${cardId}"]`);
+    if (card) {
+        card.classList.add('hidden');
+        updateEmptyState();
+    }
+}
+
+function showCardInList(cardId) {
+    const card = document.querySelector(`[data-id="${cardId}"]`);
+    if (card) {
+        card.classList.remove('hidden');
+        updateEmptyState();
+    }
+}
+
+function updatePinnedBadge() {
+    const pinnedBadge = document.getElementById('pinned-badge');
+    const pinnedSvg = document.getElementById('pinned-barcode-svg');
+    const pinnedNote = document.getElementById('pinned-note');
+
+    if (!pinnedBarcodeId) {
+        pinnedBadge.classList.add('hidden');
+        return;
+    }
+
+    const card = document.querySelector(`[data-id="${pinnedBarcodeId}"]`);
+    if (!card) {
+        pinnedBarcodeId = null;
+        pinnedBadge.classList.add('hidden');
+        return;
+    }
+
+    const dataInput = card.querySelector('.data-input');
+    const noteInput = card.querySelector('.note-input');
+
+    const barcodeData = dataInput.value.trim() || 'NO DATA';
+    try {
+        JsBarcode(pinnedSvg, barcodeData, {
+            format: "CODE128",
+            displayValue: true,
+            fontSize: 16,
+            margin: 10,
+            width: 2.2,
+            height: 60
+        });
+    } catch (e) {
+        console.error('Erreur génération code-barres épinglé:', e);
+    }
+
+    pinnedNote.textContent = noteInput.value || 'Badge';
+    pinnedBadge.classList.remove('hidden');
+}
+
+function updateEmptyState() {
+    const emptyState = document.getElementById('empty-state');
+    const grid = document.getElementById('barcodes-grid');
+    const visibleCards = grid.querySelectorAll('.barcode-card:not(.hidden)');
+
+    if (visibleCards.length === 0) {
+        emptyState.style.display = 'block';
+    } else {
+        emptyState.style.display = 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+
+    document.getElementById('add-btn').addEventListener('click', () => {
+        const card = createBarcodeCard();
+        card.querySelector('.data-input').focus();
+        saveData();
+        updateEmptyState();
+    });
+
+    document.getElementById('unpin-btn').addEventListener('click', () => {
+        const oldPinnedId = pinnedBarcodeId;
+        pinnedBarcodeId = null;
+        updatePinnedBadge();
+        if (oldPinnedId) {
+            showCardInList(oldPinnedId);
+        }
+        saveData();
     });
 });

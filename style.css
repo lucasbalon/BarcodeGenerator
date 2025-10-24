@@ -1,155 +1,256 @@
-body {
-    font-family: Source Sans Pro, Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column; /* Pour centrer le conteneur global verticalement si besoin */
-    min-height: 100vh; /* S'assure que le body prend au moins toute la hauteur de la fenêtre */
+* {
     margin: 0;
-    background-color: #f4f4f4;
-    padding: 20px;
+    padding: 0;
     box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f5f5;
+    min-height: 100vh;
+    padding: 15px;
+}
+
+.header {
+    text-align: center;
+    color: #5a5a5a;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #4a4a4a;
+}
+
+.pinned-badge {
+    position: sticky;
+    top: 15px;
+    background: #e8f4f8;
+    border: 1px solid #c5e1ea;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin: 0 auto 20px;
+    max-width: 800px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    z-index: 100;
+}
+
+.pinned-badge.hidden {
+    display: none;
+}
+
+.pinned-badge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.pinned-badge-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #5a8a9a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.unpin-btn {
+    background: white;
+    border: 1px solid #c5e1ea;
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: #5a8a9a;
+    transition: all 0.2s;
+}
+
+.unpin-btn:hover {
+    background: #d4e9f0;
+}
+
+.pinned-barcode-display {
+    background: white;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.pinned-note {
+    font-size: 0.85rem;
+    color: #6a6a6a;
+    font-weight: 500;
 }
 
 .container {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.add-btn-container {
     text-align: center;
-    width: 90%; /* Prend 90% de la largeur de la page */
-    max-width: 1200px; /* Augmente la largeur maximale du conteneur */
-    min-width: 300px; /* Empêche le conteneur d'être trop petit sur les petits écrans */
-    box-sizing: border-box; /* Inclut padding et border dans la largeur */
+    margin-bottom: 20px;
 }
 
-h1 {
-    color: #333;
-    margin-bottom: 25px;
+.add-btn {
+    background: #d4e9d4;
+    color: #5a8a5a;
+    border: 1px solid #b8d8b8;
+    border-radius: 6px;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.barcode-entry {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    /* Ancien margin-bottom: 15px; */
-    margin-bottom: 40px; /* <--- Augmenté pour un meilleur espacement */
+.add-btn:hover {
+    background: #c2ddc2;
+}
+
+.add-btn:active {
+    transform: scale(0.98);
+}
+
+.barcodes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.barcode-card {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
     padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    position: relative;
-    flex-wrap: wrap;
+    transition: all 0.2s ease;
 }
 
-.barcode-entry .input-group {
+.barcode-card.hidden {
+    display: none;
+}
+
+.barcode-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.card-header {
     display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    margin-right: 15px;
-    min-width: 250px; /* Assure que le groupe d'inputs ne devienne pas trop étroit */
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
 }
 
-.barcode-entry input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
+.card-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.action-btn {
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
     border-radius: 4px;
-    font-size: 16px;
-    margin-bottom: 8px;
-    box-sizing: border-box;
-}
-
-.barcode-entry input.note-input {
-    font-size: 14px;
-    color: #555;
-    background-color: #f0f0f0;
-    margin-bottom: 0;
-}
-
-.barcode-entry .barcode-image-container {
-    min-width: 300px; /* Augmente la largeur minimale pour l'image */
-    height: 100px; /* Augmente la hauteur fixe pour l'image */
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 0.9rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px dashed #eee;
-    margin-right: 15px;
-    flex-grow: 1; /* Permet au conteneur d'image de prendre plus d'espace */
+    transition: all 0.2s;
 }
 
-.barcode-entry img {
+.action-btn:hover {
+    background: #e8e8e8;
+}
+
+.pin-btn:hover {
+    background: #e8f4f8;
+    border-color: #c5e1ea;
+}
+
+.delete-btn:hover {
+    background: #ffe8e8;
+    border-color: #ffcccc;
+    color: #c54545;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    background: #fafafa;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #b8d8d8;
+    background: white;
+}
+
+input[type="text"]::placeholder {
+    color: #aaa;
+}
+
+.note-input {
+    font-size: 0.85rem;
+}
+
+.barcode-display {
+    background: #fafafa;
+    border: 1px solid #f0f0f0;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90px;
+}
+
+.barcode-display svg {
     max-width: 100%;
-    max-height: 90px; /* Augmente la hauteur max de l'image du code-barres */
-    display: block;
+    height: auto;
 }
 
-.barcode-entry .delete-btn {
-    background-color: #ff5c5c;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px; /* Légèrement plus grand */
-    height: 30px; /* Légèrement plus grand */
-    font-size: 18px; /* Taille de la police plus grande */
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 30px;
+.empty-state {
     text-align: center;
-    padding: 0;
-    transition: background-color 0.3s ease;
-    margin-left: 10px; /* Ajoute un petit espace à gauche du bouton de suppression */
+    color: #999;
+    padding: 40px 20px;
 }
 
-.barcode-entry .delete-btn:hover {
-    background-color: #e04343;
+.empty-state h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: #777;
+    font-weight: 500;
 }
 
-#add-barcode-btn {
-    background-color: #5cb85c;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 45px; /* Légèrement plus grand */
-    height: 45px; /* Légèrement plus grand */
-    font-size: 28px; /* Taille de la police plus grande */
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-    margin-bottom: 25px;
-    transition: background-color 0.3s ease;
-    line-height: 43px;
+.empty-state p {
+    font-size: 0.95rem;
 }
 
-#add-barcode-btn:hover {
-    background-color: #4cae4c;
-}
+@media (max-width: 768px) {
+    .barcodes-grid {
+        grid-template-columns: 1fr;
+    }
 
-.tec-it-attribution {
-    padding-top: 15px;
-    text-align: center;
-    font-size: 12px;
-    color: #555;
-}
-
-.tec-it-attribution a {
-    color: #007bff;
-    text-decoration: none;
-}
-
-.tec-it-attribution a:hover {
-    text-decoration: underline;
-}
-
-.tec-it-attribution img {
-    border: 0;
-    margin-top: 5px;
-    width: 60px;
-    height: 60px;
-}
-
-.barcode-entry .barcode-image-container svg {
-    max-width: 100%;
-    max-height: 100px;
-    display: block;
+    .header h1 {
+        font-size: 1.4rem;
+    }
 }
